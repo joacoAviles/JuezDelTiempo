@@ -1,0 +1,3 @@
+NOTION_TOKEN=''
+NOTION_DB_ID=''
+GOOGLE_CREDENTIALS_FILE='credentials.json'

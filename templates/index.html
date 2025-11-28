@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Juez del Tiempo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div id="app">
+    <div class="top">
+        <div class="left">
+            <h2>Hoy</h2>
+            {% for e in eventos %}
+                <div class="event-item {% if current_event and current_event.id == e.id %}active{% endif %}">
+                    <div class="ev-title">{{ e.title }}</div>
+                    <div class="ev-time">
+                        {{ e.start_planned[11:16] }} - {{ e.end_planned[11:16] }} ({{ e.estimated_minutes }}m)
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="right">
+            {% if current_event %}
+                <h2>Evento Actual</h2>
+                <h3>{{ current_event.title }}</h3>
+                <p>Programado: {{ current_event.start_planned[11:16] }} - {{ current_event.end_planned[11:16] }}</p>
+                <p>Estimado: {{ current_event.estimated_minutes }} minutos</p>
+            {% else %}
+                <h2>No quedan eventos</h2>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="controls">
+        <button onclick="startEvent()">▶ START</button>
+        <button class="stop" onclick="stopEvent()">⏹ STOP</button>
+    </div>
+
+    <div class="timer-box">
+        <div class="row">
+            <span>Tiempo real:</span>
+            <span id="real-time">00:00:00</span>
+        </div>
+        <div class="row">
+            <span>Progreso:</span>
+            <span id="progress-label">0%</span>
+        </div>
+        <div class="bar"><div id="progress-fill"></div></div>
+    </div>
+</div>
+
+<script src="/static/app.js"></script>
+<script>
+    const startTimestamp = {{ start_timestamp if start_timestamp else 'null' }};
+    const elapsedAtLoad = {{ elapsed_seconds if elapsed_seconds else 0 }};
+    const estimatedMinutes = {% if current_event %}{{ current_event.estimated_minutes }}{% else %}0{% endif %};
+</script>
+</body>
+</html>
