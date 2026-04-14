@@ -2,59 +2,81 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Juez del Tiempo</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juez del Tiempo</title>
+    <meta name="theme-color" content="#0f172a">
+    <link rel="manifest" href="/static/manifest.webmanifest">
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-<div id="app">
-    <div class="top">
-        <div class="left">
-            <h2>Hoy</h2>
-            {% for e in eventos %}
-                <div class="event-item {% if current_event and current_event.id == e.id %}active{% endif %}">
-                    <div class="ev-title">{{ e.title }}</div>
-                    <div class="ev-time">
-                        {{ e.start_planned[11:16] }} - {{ e.end_planned[11:16] }} ({{ e.estimated_minutes }}m)
-                    </div>
+<main class="app">
+    <header class="hero">
+        <div>
+            <p class="eyebrow">JUEZ DEL TIEMPO</p>
+            <h1>Tu gestor de tareas + tracker de tiempo</h1>
+            <p class="subtitle">Funciona sin internet, guarda todo localmente y exporta reportes listos para pegar en Notion.</p>
+        </div>
+        <div class="hero-actions">
+            <button id="install-btn" class="secondary hidden">Instalar app</button>
+            <button id="clear-day-btn" class="danger">Reiniciar día</button>
+        </div>
+    </header>
+
+    <section class="grid">
+        <article class="card">
+            <h2>Nueva tarea</h2>
+            <form id="task-form" class="task-form">
+                <input id="title" required maxlength="120" placeholder="Ej: Escribir propuesta comercial">
+                <div class="row two">
+                    <input id="category" maxlength="40" placeholder="Categoría (Trabajo, Estudio...)">
+                    <input id="estimate" type="number" min="5" max="480" value="25" required placeholder="Minutos estimados">
                 </div>
-            {% endfor %}
-        </div>
-        <div class="right">
-            {% if current_event %}
-                <h2>Evento Actual</h2>
-                <h3>{{ current_event.title }}</h3>
-                <p>Programado: {{ current_event.start_planned[11:16] }} - {{ current_event.end_planned[11:16] }}</p>
-                <p>Estimado: {{ current_event.estimated_minutes }} minutos</p>
-            {% else %}
-                <h2>No quedan eventos</h2>
-            {% endif %}
-        </div>
-    </div>
+                <button type="submit">Agregar tarea</button>
+            </form>
+        </article>
 
-    <div class="controls">
-        <button onclick="startEvent()">▶ START</button>
-        <button class="stop" onclick="stopEvent()">⏹ STOP</button>
-    </div>
+        <article class="card">
+            <h2>Resumen de hoy</h2>
+            <div class="stats" id="stats"></div>
+        </article>
+    </section>
 
-    <div class="timer-box">
-        <div class="row">
-            <span>Tiempo real:</span>
-            <span id="real-time">00:00:00</span>
+    <section class="card">
+        <div class="section-header">
+            <h2>Tareas del día</h2>
+            <button id="sort-btn" class="secondary">Ordenar por prioridad</button>
         </div>
-        <div class="row">
-            <span>Progreso:</span>
-            <span id="progress-label">0%</span>
+        <div id="tasks" class="tasks"></div>
+    </section>
+
+    <section class="card">
+        <div class="section-header">
+            <h2>Exportar a Notion</h2>
+            <div class="actions-inline">
+                <button id="copy-md-btn" class="secondary">Copiar tabla Markdown</button>
+                <button id="download-csv-btn" class="secondary">Descargar CSV</button>
+            </div>
         </div>
-        <div class="bar"><div id="progress-fill"></div></div>
+        <textarea id="notion-output" rows="8" readonly></textarea>
+    </section>
+</main>
+
+<template id="task-template">
+    <div class="task-item">
+        <div>
+            <h3 class="task-title"></h3>
+            <p class="meta"></p>
+            <p class="progress-label"></p>
+        </div>
+        <div class="task-controls">
+            <button class="start">▶ Iniciar</button>
+            <button class="pause secondary">⏸ Pausar</button>
+            <button class="complete">✅ Completar</button>
+            <button class="delete danger">🗑 Eliminar</button>
+        </div>
     </div>
-</div>
+</template>
 
 <script src="/static/app.js"></script>
-<script>
-    const startTimestamp = {{ start_timestamp if start_timestamp else 'null' }};
-    const elapsedAtLoad = {{ elapsed_seconds if elapsed_seconds else 0 }};
-    const estimatedMinutes = {% if current_event %}{{ current_event.estimated_minutes }}{% else %}0{% endif %};
-</script>
 </body>
 </html>
