@@ -1,6 +1,5 @@
 const STORAGE_KEY = "juez_del_tiempo_v2";
 
-let deferredPrompt = null;
 const state = loadState();
 
 const taskForm = document.getElementById("task-form");
@@ -219,24 +218,6 @@ document.getElementById("clear-day-btn").addEventListener("click", () => {
         persistAndRender();
     }
 });
-
-window.addEventListener("beforeinstallprompt", (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    document.getElementById("install-btn").classList.remove("hidden");
-});
-
-document.getElementById("install-btn").addEventListener("click", async () => {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    await deferredPrompt.userChoice;
-    deferredPrompt = null;
-    document.getElementById("install-btn").classList.add("hidden");
-});
-
-if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("/static/sw.js");
-}
 
 setInterval(() => {
     if (currentTask()) {
